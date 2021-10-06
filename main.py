@@ -1,9 +1,18 @@
+import time
 import requests
+
+from app import db
 
 # TODO
 # Consultar el precio
-# Envíar un correo
+# Envíar un correo si y solo si se llega a un stop limit
 # Leer de una base de datos para saber los usuarios y las criptos relacionadas!
+
+STOP_LIMIT = 50000
+
+def send_notification():
+    print('El correo se envío')
+
 
 def get_current_price(symbol, vs_currencies='usd'):
     
@@ -15,7 +24,10 @@ def get_current_price(symbol, vs_currencies='usd'):
 
 
 if __name__ == '__main__':
-    print(
-        get_current_price('bitcoin')
-    )
-    
+    while True:
+        price = get_current_price('bitcoin')
+        
+        if price >= STOP_LIMIT:
+            send_notification()
+
+        time.sleep(15)
