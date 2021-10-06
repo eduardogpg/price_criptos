@@ -1,14 +1,11 @@
 import time
 import requests
 
-from app import db
-
-# TODO
-# Consultar el precio
-# Envíar un correo si y solo si se llega a un stop limit
-# Leer de una base de datos para saber los usuarios y las criptos relacionadas!
+from app import UserCripto
+from app import create_app
 
 STOP_LIMIT = 50000
+app = create_app()
 
 def send_notification():
     print('El correo se envío')
@@ -24,10 +21,19 @@ def get_current_price(symbol, vs_currencies='usd'):
 
 
 if __name__ == '__main__':
-    while True:
-        price = get_current_price('bitcoin')
+    
+    # En cada iteración se va a hacer una petición al API
+
+    while:
         
-        if price >= STOP_LIMIT:
+        # Iterar sobre los precios de las criptos
+        price = get_current_price('bitcoin')
+
+        for limit in UserCripto.select().where( UserCripto.stop_limit < price ):
             send_notification()
 
-        time.sleep(15)
+            UserCripto.update(stop_limit=None).where(UserCripto.id == limit.id).execute()
+
+        time.sleep(20)
+
+    

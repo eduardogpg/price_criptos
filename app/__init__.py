@@ -1,9 +1,9 @@
 from peewee import MySQLDatabase
 
-from local_settings import DATABASE_USERNAME
-from local_settings import DATABASE_PASSWORD
+from .database import db
+from .database import UserCripto
 
-db = MySQLDatabase('notificaciones_cripto',
-                    user=DATABASE_USERNAME,
-                    password=DATABASE_PASSWORD,
-                    host='localhost', port=3306)
+def create_app():
+    db.create_tables([UserCripto])
+
+    return True
