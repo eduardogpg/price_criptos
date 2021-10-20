@@ -50,7 +50,9 @@ if __name__ == '__main__':
                                     user_cripto.criptocurrency.symbol,
                                     price['usd'])
 
-                    
+                    # Notificar si el precio sube un 10%
+                    UserCripto.update(stop_limit=None).where(UserCripto.id==user_cripto.id).execute()
+
 
         time.sleep(5)
 
