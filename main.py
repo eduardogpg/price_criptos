@@ -1,14 +1,22 @@
 import time
 import requests
 
+from app import User
 from app import UserCripto
+from app import CriptoCurrency
+
 from app import create_app
 
 STOP_LIMIT = 50000
 app = create_app()
 
+def insert_currencies():
+    # CriptoCurrency.create(name='Bitcoin', symbol='BTC')
+    CriptoCurrency.create(name='Terra', symbol='Luna')
+
+
 def send_notification():
-    print('El correo se envío')
+    print('El correo se envío!!!')
 
 
 def get_current_price(symbol, vs_currencies='usd'):
@@ -17,23 +25,19 @@ def get_current_price(symbol, vs_currencies='usd'):
     
     if response.status_code == 200:
         payload = response.json()
-        return payload[symbol][vs_currencies]
-
+        return payload
+    
+    else:
+        return None
 
 if __name__ == '__main__':
-    
-    # En cada iteración se va a hacer una petición al API
+    ids = [ cripto.name for cripto in CriptoCurrency.select(CriptoCurrency.name).execute() ]
+    ids = ','.join(ids)
 
-    while:
+    if (prices := get_current_price(ids)):
         
-        # Iterar sobre los precios de las criptos
-        price = get_current_price('bitcoin')
+        for cripto in prices.items():
+            print(cripto)
 
-        for limit in UserCripto.select().where( UserCripto.stop_limit < price ):
-            send_notification()
-
-            UserCripto.update(stop_limit=None).where(UserCripto.id == limit.id).execute()
-
-        time.sleep(20)
-
+    
     
