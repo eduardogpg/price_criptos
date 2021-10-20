@@ -19,7 +19,7 @@ class User(Model):
 class CriptoCurrency(Model):
     name = CharField(max_length=255, null=False)
     symbol = CharField(max_length=255, null=False)
-    # coingeeko_id = ''
+    coingecko_id = CharField(max_length=255, null=False)
 
     class Meta:
         database = db

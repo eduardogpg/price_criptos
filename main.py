@@ -7,16 +7,15 @@ from app import CriptoCurrency
 
 from app import create_app
 
-STOP_LIMIT = 50000
 app = create_app()
 
 def insert_currencies():
-    # CriptoCurrency.create(name='Bitcoin', symbol='BTC')
-    CriptoCurrency.create(name='Terra', symbol='Luna')
+    CriptoCurrency.create(name='Bitcoin', symbol='BTC', coingecko_id='bitcoin')
+    CriptoCurrency.create(name='Terra', symbol='Luna', coingecko_id='terra-luna')
 
 
-def send_notification():
-    print('El correo se envío!!!')
+def send_notification(email, symbol, price):
+    print(f'Una noficiación será enviada a {email} por que el precio de la cripto {symbol} esta en {price}')
 
 
 def get_current_price(symbol, vs_currencies='usd'):
@@ -31,13 +30,31 @@ def get_current_price(symbol, vs_currencies='usd'):
         return None
 
 if __name__ == '__main__':
-    ids = [ cripto.name for cripto in CriptoCurrency.select(CriptoCurrency.name).execute() ]
-    ids = ','.join(ids)
 
-    if (prices := get_current_price(ids)):
-        
-        for cripto in prices.items():
-            print(cripto)
+    while True:
+        ids = [ cripto.coingecko_id for cripto in CriptoCurrency.select(CriptoCurrency.coingecko_id).execute() ]
+        ids = ','.join(ids)
+
+        if (prices := get_current_price(ids)):
+            
+            for name, price in prices.items():
+
+                user_criptos = ( UserCripto.select()
+                .join(CriptoCurrency)
+                .where(CriptoCurrency.name==name)
+                .where(UserCripto.stop_limit < price['usd']))
+                
+                for user_cripto in user_criptos.execute():
+
+                    send_notification(user_cripto.user.email,
+                                    user_cripto.criptocurrency.symbol,
+                                    price['usd'])
+
+                    
+
+        time.sleep(5)
+
+            
 
     
     
